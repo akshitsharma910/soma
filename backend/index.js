@@ -3,8 +3,8 @@ const express=require("express");
 const path=require("path");
 const mongoose=require("mongoose"); 
 const userRoute=require("./routes/user.route")
-const postRoute=require("./routes/post.route")
-const Post=require("./models/post.model")
+const postFunctionRoute=require("./routes/postFunctions.route")
+const Post=require("./models/postFunctions.model")
 const app=express();
 const PORT=9999;
 
@@ -23,15 +23,15 @@ app.use(express.urlencoded({extended:false}))
 
 app.get("/",async (req,res)=>{
     try {
-        const posts = await Post.find().populate("author", "name").exec(); // Fetch all posts and populate the author
-        return res.render("home", { posts, message: "Welcome to Soma" }); // Pass posts to the template
+        const posts = await Post.find().populate("author", "name").exec(); 
+        return res.render("home", { posts, message: "Welcome to Soma" }); 
     } catch (error) {
         console.error("Error fetching posts:", error);
         return res.status(500).send("Internal Server Error");
     }
 });
 
-app.use("/add",postRoute);
+app.use("/posts",postFunctionRoute);
 app.use("/user",userRoute);
 
 

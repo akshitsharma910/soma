@@ -36,6 +36,8 @@
         h2 {
             color: #333;
         }
+
+    
         p {
             color: #555;
         }
@@ -61,7 +63,7 @@
         <% } else { %>
             <% posts.forEach(post => { %>
                 <div class="post">
-                    <h2><%= post.title %></h2>
+                    <h2><a href="/posts/<%= post._id %>"><%= post.title %></a></h2>
                     <p class="genre">Genre: <%= post.genre %></p>
                     <p class="author">Author: <%= post.author ? post.author.name : "Unknown" %></p>
                     <p><%= post.content %></p>

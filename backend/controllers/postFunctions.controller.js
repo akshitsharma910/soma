@@ -1,4 +1,4 @@
-const Post=require("../models/post.model")
+const Post=require("../models/postFunctions.model")
 
 
 
@@ -12,8 +12,19 @@ async function addPost(req,res){
 }
 
 
+async function showPost(req,res){
+    const id=req.params.id;
+
+    const post=await Post.findById(id);
+
+
+    res.render("showPost",{post});
+}
+
+
 
 module.exports={
     addPost,
+    showPost,
 
 }
