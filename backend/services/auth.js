@@ -1,7 +1,38 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-const SECRET_KEY = process.env.SECRET_KEY || "chintu";
+
+const JWT_SECRET = process.env.SECRET_KEY || "chintu";
+
+
+
+
+const authenticateJWT = (req, res, next) => {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; 
+
+
+    if (!token) {
+        req.user = null; 
+        return next();
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            req.user = null;  
+        } else {
+            req.user = user;
+        }
+        next();
+    });
+};
+
+module.exports = { authenticateJWT };
+
+
+
+
+
+
 
 
 // function authenticateJWT(req, res, next) {
@@ -20,23 +51,3 @@ const SECRET_KEY = process.env.SECRET_KEY || "chintu";
 //         next();
 //     });
 // }
-
-const authenticateJWT = (req, res, next) => {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]; 
-
-    if (!token) {
-        req.user = null; 
-        return next();
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) {
-            req.user = null;  
-        } else {
-            req.user = user;
-        }
-        next();
-    });
-};
-
-module.exports = { authenticateJWT };

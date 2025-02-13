@@ -5,8 +5,8 @@ const path=require("path");
 const mongoose=require("mongoose"); 
 const userRoute=require("./routes/user.route")
 const postFunctionRoute=require("./routes/postFunctions.route")
-const Post=require("./models/postFunctions.model");
 const { authenticateJWT } = require("./services/auth");
+const { handleHomePage } = require("./controllers/postFunctions.controller");
 const app=express();
 const PORT=9999;
 
@@ -24,17 +24,7 @@ app.use(express.urlencoded({extended:true}))
 
 
 
-app.get("/",authenticateJWT, async (req, res) => {
-    try {
-        const posts = await Post.find().populate("author", "fullName").exec(); 
-        const user = req.user || null; 
-        
-        return res.render("home", { posts, message: "Welcome to Soma", user }); 
-    } catch (error) {
-        console.error("Error fetching posts:", error);
-        return res.redirect("/user/login");
-    }
-});
+app.get("/",authenticateJWT,handleHomePage);
 
 
 app.use("/posts",postFunctionRoute);

@@ -64,9 +64,15 @@
     </style>
 </head>
 <body>
+    
     <header>
+        
         <h1><%= message %></h1>
-        <button type="button" onclick="window.location.href='/posts/add'">Add Post</button>
+        <% if(user){ %>
+            <button type="button" onclick="window.location.href='/posts/add'">Add Post</button>
+        <% } else{ %>
+            <button type="button" onclick="window.location.href='/user/login'">Add Post</button>
+        <% } %>
         
         <% if (!user) { %>
             <button type="button" onclick="window.location.href='/user/signup'">Signup</button>
@@ -85,6 +91,8 @@
             <span ><%= user ? user.fullName : "User" %></span>
         </div>
     </header>
+
+    <%- include("./partials/sidebar") %>
     
     <div class="post-container">
         <% if (posts.length === 0) { %>

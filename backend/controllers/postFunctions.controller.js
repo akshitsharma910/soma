@@ -1,7 +1,26 @@
 const Post=require("../models/postFunctions.model")
 const User=require("../models/user.model")
 const mongoose=require("mongoose")
+const Comment=require("../models/comment.model")
 
+
+async function handleHomePage(req,res){
+        try {
+            const posts = await Post.find().populate("author", "fullName").exec(); 
+            const user = req.user || null; 
+            
+            return res.render("home", { posts, message: "Welcome to Soma", user }); 
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+            return res.redirect("/user/login");
+        }
+}
+
+
+
+async function getPostPage(req,res) {
+        return res.render("addPost");
+}
 
 async function addPost(req, res) {
 
@@ -27,18 +46,26 @@ async function addPost(req, res) {
     }
 }
 
+
 async function showPost(req, res) {
     try {
         const postId = req.params.id;
 
+        // Fetch post with author details
         const post = await Post.findById(postId).populate("author");
 
         if (!post) {
-            console.log("Post not found");
             return res.status(404).json({ message: "Post not found" });
         }
 
-        res.render("showPost", { post, user: req.user || null });
+        // Fetch comments related to the post
+        const comments = await Comment.find({ post: postId })
+            .populate("author", "fullName") // Populate author field with fullName only
+            .sort({ createdAt: -1 }) // Sort by latest comment first
+            .lean(); // Convert to plain objects
+
+        // Render the page with data
+        res.render("showPost", { post, comments, user: req.user || null });
     } catch (error) {
         console.error("Error fetching post:", error.message);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
@@ -71,11 +98,46 @@ async function deletePost(req, res) {
 }
 
 
+async function addComment(req, res) {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized. Please log in." });
+        }
+
+        const { content } = req.body;
+        const postId = req.params.id;
+
+        if (!content || content.trim() === "") {
+            return res.status(400).json({ message: "Comment cannot be empty" });
+        }
+
+        const newComment = new Comment({
+            content,
+            post: postId,  // ✅ Correct reference to Post
+            author: req.user.id,  // ✅ Correct reference to User
+        });
+
+        await newComment.save();
+
+        
+        await Post.findByIdAndUpdate(postId, { $push: { comments: newComment._id } });
+
+        res.redirect(`/posts/${postId}`)
+    } catch (error) {
+        console.error("Error posting comment:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+}
+
+
 
 
 
 module.exports={
+    getPostPage,
     addPost,
     showPost,
     deletePost,
+    handleHomePage,
+    addComment
 }
