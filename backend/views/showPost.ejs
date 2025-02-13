@@ -4,19 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= post.title %></title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .post-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .post-title {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .post-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .post-content {
+            margin-top: 20px;
+        }
+    </style>
 </head>
-<body>
-    <div class="post-container">
-        <% if (post) { %>
-            <div class="post">
-                <h1><%= post.title %></h1>
-                <p class="genre">Genre: <%= post.genre %></p>
-                <p class="author">Author: <%= post.author ? post.author.name : "Unknown" %></p>
-                <p class="content"><%= post.content %></p>
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <%- include("./partials/sidebar") %>
             </div>
-        <% } else { %>
-            <p>Post not found.</p>
-        <% } %>
+            <div class="col-md-9">
+                <div class="post-container">
+                    <% if (post) { %>
+                        <div class="post">
+                            <h1 class="post-title"><%= post.title %></h1>
+                            <p class="post-meta">Genre: <%= post.genre %> | Author: <%= post.author ? post.author : "Unknown" %> | Date: <%= post.createdAt.toDateString() %></p>
+                            <div class="post-content">
+                                <p><%= post.content %></p>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <p>Post not found.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -55,7 +55,7 @@
 <body>
     <header>
         <h1><%= message %></h1>
-        <button type="button" onclick="window.location.href='/add'">Add Post</button>
+        <button type="button" onclick="window.location.href='/posts/add'">Add Post</button>
     </header>
     <div class="post-container">
         <% if (posts.length === 0) { %>
@@ -65,7 +65,7 @@
                 <div class="post">
                     <h2><a href="/posts/<%= post._id %>"><%= post.title %></a></h2>
                     <p class="genre">Genre: <%= post.genre %></p>
-                    <p class="author">Author: <%= post.author ? post.author.name : "Unknown" %></p>
+                    <p class="author">Author: <%= post.author ? post.author : "Unknown" %></p>
                     <p><%= post.content %></p>
                     
                 </div>
