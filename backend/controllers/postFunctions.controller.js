@@ -133,11 +133,12 @@ async function addComment(req, res) {
 
 
 
+
 module.exports={
     getPostPage,
     addPost,
     showPost,
     deletePost,
     handleHomePage,
-    addComment
+    addComment,
 }

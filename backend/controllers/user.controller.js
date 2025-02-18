@@ -1,6 +1,9 @@
 const User=require("../models/user.model");
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
+const Post=require("../models/postFunctions.model")
+const mongoose=require("mongoose")
+
 
 const SECRET_KEY = process.env.SECRET_KEY || "chintu";
 
@@ -57,6 +60,30 @@ function handleUserForgot(req,res){
     res.render("forgot");
 }
 
+async function showUserPost(req, res) {
+    try {
+
+        if (!req.user || !req.user.id) {  
+            console.error("User not authenticated");
+            return res.status(401).json({ message: "Unauthorized: User not logged in" });
+        }
+
+        const userId = new mongoose.Types.ObjectId(req.user.id); 
+
+        const posts = await Post.find({ author: userId })
+            .populate("author", "fullName")
+            .sort({ createdAt: -1 })
+            .lean();
+
+
+        res.render("myPosts", { posts, user: req.user });
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
 
 module.exports={
     handleUserSignup,
@@ -65,5 +92,6 @@ module.exports={
     handleUserLogout,
     createUser,
     verifyUser,
+    showUserPost
 
 }
