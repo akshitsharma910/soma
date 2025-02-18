@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home - Soma</title>
     <style>
-      body {
+      /* body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
         background-color: #f4f4f9;
-      }
+      } */
 
-      header {
+      /* header {
         background-color: #4a90e2;
         color: white;
         padding: 1rem;
         text-align: center;
         position: relative;
-      }
+      } */
       .profile {
         position: absolute;
         top: 35px;
@@ -32,55 +32,61 @@
         border-radius: 50%;
         margin-right: 10px;
       }
-      .post-container {
+      /* .post-container {
         max-width: 800px;
         margin: 2rem auto;
         padding: 1rem;
         background: white;
         border-radius: 8px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      .post {
+      } */
+      /* .post {
         margin-bottom: 2rem;
         padding: 1rem;
         border-bottom: 1px solid #ddd;
-      }
+      } */
       .post:last-child {
         border-bottom: none;
       }
-      h2 {
+      /* h2 {
         color: #333;
-      }
-      p {
+      } */
+      /* p {
         color: #555;
-      }
-      .genre {
-        font-style: italic;
+      } */
+      /* .genre {
         color: #888;
       }
       .author {
-        font-size: 0.9rem;
         color: #666;
+      } */
+
+      .heading-container:hover {
+        background-color: rgb(245, 245, 245);
       }
     </style>
   </head>
   <body>
-    <%- include('partials/head') %>
-    <%- include('partials/navbar') %>
-    <%- include('partials/sidebar') %>
+    <%- include('partials/head') %> <%- include('partials/navbar') %> <%-
+    include('partials/sidebar') %>
 
-
-    <div class="post-container d-block">
+    <div class="post-container d-block container col-7 mt-5">
       <% if (posts.length === 0) { %>
       <p>No posts available yet.</p>
       <% } else { %> <% posts.forEach(post => { %>
-      <div class="post">
-        <h2><a href="/posts/<%= post._id %>"><%= post.title %></a></h2>
-        <p class="genre">Genre: <%= post.genre %></p>
-        <p class="author">
+      <div class="post mb-4 p-3 border-bottom heading-container">
+      <a href="/posts/<%= post._id %>" class="text-dark" style="text-decoration: none">
+        <div class=" border-bottom row mb-4 pt-4">
+        <h4><%= post.title %></h4>
+        <p class="genre fs-6 lead container col text-muted">
+          Genre: <%= post.genre %>
+        </p>
+        <p class="author fs-6 lead col small text-muted">
           Author: <%= post.author ? post.author.fullName : "Unknown" %>
         </p>
+        </div>
         <p><%= post.content %></p>
+      </a>
       </div>
       <% }); %> <% } %>
     </div>
