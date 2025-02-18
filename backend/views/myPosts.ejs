@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Posts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .post-container {
+            margin-top: 20px;
+        }
+        .post {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .post h2 {
+            margin: 0;
+            color: #333;
+        }
+        .post-meta {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My Posts</h1>
+
+
+    <div class="post-container">
+        <% if (posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+                <div class="post">
+                    <h2><a href="/posts/<%= post._id %>"><%= post.title %></a></h2>
+                    <p class="post-meta">Published on: <%= new Date(post.createdAt).toLocaleDateString() %></p>
+                    <p><%= post.content.substring(0, 100) %></p>
+                    
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>You haven't written any posts yet.</p>
+        <% } %>
+    </div>
+
+    
+</body>
+</html>
