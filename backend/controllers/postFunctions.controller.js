@@ -130,6 +130,45 @@ async function addComment(req, res) {
 }
 
 
+async function deleteComment(req,res){
+        const { postId, commentId } = req.params;
+    
+        try {
+            // Find the post by its ID
+            const post = await Post.findById(postId);
+            if (!post) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+    
+            // Find the comment by its ID
+            const comment = await Comment.findById(commentId);
+            if (!comment) {
+                return res.status(404).json({ message: "Comment not found" });
+            }
+    
+            // Check if the comment belongs to the user trying to delete it
+            if (comment.author.toString() !== req.user.id) {
+                return res.status(403).json({ message: "You can only delete your own comments!" });
+            }
+    
+            // Remove the comment from the Post document (from the comments array)
+            post.comments = post.comments.filter(c => c.toString() !== commentId);
+            await post.save();
+    
+            // Now remove the comment from the Comment collection
+            await Comment.findByIdAndDelete(commentId);
+    
+            // Respond with a success message
+            return res.status(200).json({ message: "Comment deleted successfully" });
+    
+        } catch (error) {
+            console.error("Error deleting comment:", error);
+            return res.status(500).json({ message: "Server error" });
+        }
+    }
+
+
+
 
 
 
@@ -141,4 +180,5 @@ module.exports={
     deletePost,
     handleHomePage,
     addComment,
+    deleteComment
 }
