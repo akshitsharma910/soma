@@ -1,29 +1,34 @@
-const Post=require("../models/postFunctions.model")
-const User=require("../models/user.model")
-const mongoose=require("mongoose")
-const Comment=require("../models/comment.model")
+const Post = require("../models/postFunctions.model");
+const User = require("../models/user.model");
+const Comment = require("../models/comment.model");
 
+async function handleHomePage(req, res) {
+    try {
+        const posts = Post.findAll();
+        const user = req.user || null;
 
-async function handleHomePage(req,res){
-        try {
-            const posts = await Post.find().populate("author", "fullName").exec(); 
-            const user = req.user || null; 
-            
-            return res.render("home", { posts, message: "Welcome to Soma", user }); 
-        } catch (error) {
-            console.error("Error fetching posts:", error);
-            return res.redirect("/user/login");
-        }
+        return res.render("home", { posts, message: "Welcome to Soma", user });
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        return res.redirect("/user/login");
+    }
 }
 
+// async function getMyPost(req, res) {
+//     try {
+//         const posts = Post.findByAuthorId(req.user.id);
+//         return res.render("home", { posts, message: "Welcome to Soma", user: req.user });
+//     } catch (error) {
+//         console.error("Error fetching posts:", error);
+//         return res.status(500).json({ message: "Internal Server Error" });
+//     }
+// }
 
-
-async function getPostPage(req,res) {
-        return res.render("addPost");
+async function getPostPage(req, res) {
+    return res.render("addPost");
 }
 
 async function addPost(req, res) {
-
     if (!req.user) {
         return res.status(401).json({ message: "Unauthorized: No user data" });
     }
@@ -31,13 +36,13 @@ async function addPost(req, res) {
     try {
         const { title, content, genre } = req.body;
 
-        const post = await Post.create({
+        const post = Post.create({
             title,
             content,
             genre,
-            author: new mongoose.Types.ObjectId(req.user.id),   
+            author: req.user.fullName,
+            authorId: req.user.id,
         });
-
 
         return res.redirect("/");
     } catch (error) {
@@ -46,25 +51,18 @@ async function addPost(req, res) {
     }
 }
 
-
 async function showPost(req, res) {
     try {
         const postId = req.params.id;
 
-        // Fetch post with author details
-        const post = await Post.findById(postId).populate("author");
+        const post = Post.findById(postId);
 
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        // Fetch comments related to the post
-        const comments = await Comment.find({ post: postId })
-            .populate("author", "fullName") // Populate author field with fullName only
-            .sort({ createdAt: -1 }) // Sort by latest comment first
-            .lean(); // Convert to plain objects
+        const comments = Comment.findByPostId(postId);
 
-        // Render the page with data
         res.render("showPost", { post, comments, user: req.user || null });
     } catch (error) {
         console.error("Error fetching post:", error.message);
@@ -72,31 +70,27 @@ async function showPost(req, res) {
     }
 }
 
-
-
 async function deletePost(req, res) {
     try {
         const postId = req.params.id;
-        const userId = req.user.id;  
+        const userId = req.user.id;
 
-        const post = await Post.findById(postId);
+        const post = Post.findById(postId);
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
 
-        if (post.author.toString() !== userId) {
+        if (post.authorId !== userId) {
             return res.status(403).json({ message: "Unauthorized to delete this post" });
         }
 
-        await Post.findByIdAndDelete(postId);
+        Post.deleteById(postId);
         return res.status(200).json({ message: "Post deleted successfully" });
-
     } catch (err) {
         console.error("Error deleting post:", err);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
-
 
 async function addComment(req, res) {
     try {
@@ -111,34 +105,65 @@ async function addComment(req, res) {
             return res.status(400).json({ message: "Comment cannot be empty" });
         }
 
-        const newComment = new Comment({
+        const newComment = Comment.create({
             content,
-            post: postId,  // ✅ Correct reference to Post
-            author: req.user.id,  // ✅ Correct reference to User
+            post: postId,
+            author: req.user.fullName,
+            authorId: req.user.id,
         });
 
-        await newComment.save();
-
-        
-        await Post.findByIdAndUpdate(postId, { $push: { comments: newComment._id } });
-
-        res.redirect(`/posts/${postId}`)
+        Post.addComment(postId, newComment);
+        res.redirect(`/posts/${postId}`);
     } catch (error) {
         console.error("Error posting comment:", error);
         res.status(500).json({ message: "Server error", error });
     }
 }
 
+async function deleteComment(req, res) {
+    const {postId, commentId} = req.params;
 
+    try {
+        // Find the post by its ID
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
 
+        // Find the comment by its ID
+        const comment = await Comment.findByCommentId(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
 
+        // Check if the user is the author of the comment
+        if (comment.authorId !== req.user.id) {
+            console.log(comment.authorId);
+            console.log(req.user.id);
+            return res.status(403).json({ message: "Unauthorized to delete this comment" });
+        }
 
+        // Delete the comment from the Post document (from the comments array)
+        post.comments = post.comments.filter(comment => comment.id !== commentId);
+        await Post.update({ id: postId }, { $pull: { comments: { id: commentId } } });
 
-module.exports={
+        // Delete the comment from the Comment data
+        Comment.findByIdAndDelete(commentId);
+        // Return a success message
+        return res.status(200).json({ message: "Comment deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+module.exports = {
     getPostPage,
     addPost,
     showPost,
     deletePost,
     handleHomePage,
     addComment,
-}
+    deleteComment,
+    // getMyPost,
+};

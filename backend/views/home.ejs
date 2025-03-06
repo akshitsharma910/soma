@@ -73,22 +73,22 @@
     <div class="post-container d-block container col-7 mt-5">
       <% if (posts.length === 0) { %>
       <p>No posts available yet.</p>
-      <% } else { %> <% posts.forEach(post => { %>
-      <div class="post mb-4 p-3 border-bottom heading-container">
-      <a href="/posts/<%= post._id %>" class="text-dark" style="text-decoration: none">
-        <div class=" border-bottom row mb-4 pt-4">
-        <h4><%= post.title %></h4>
-        <p class="genre fs-6 lead container col text-muted">
-          Genre: <%= post.genre %>
-        </p>
-        <p class="author fs-6 lead col small text-muted">
-          Author: <%= post.author ? post.author.fullName : "Unknown" %>
-        </p>
+        <% } else { %> <% posts.forEach(post => { %>
+        <div class="post mb-4 p-3 border-bottom heading-container">
+        <a href="/posts/<%= post.id %>" class="text-dark" style="text-decoration: none">
+          <div class=" border-bottom row mb-4 pt-4">
+          <h4><%= post.title %></h4>
+          <p class="genre fs-6 lead container col text-muted">
+            Genre: <%= post.genre %>
+          </p>
+          <p class="author fs-6 lead col small text-muted">
+            Author: <%= post.author ? post.author : "Unknown" %>
+          </p>
+          </div>
+          <p><%= post.content %></p>
+        </a>
         </div>
-        <p><%= post.content %></p>
-      </a>
-      </div>
-      <% }); %> <% } %>
+        <% }); %> <% } %>
     </div>
   </body>
 </html>

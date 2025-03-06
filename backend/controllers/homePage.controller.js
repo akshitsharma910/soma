@@ -1,12 +1,5 @@
 const Post=require("../models/postFunctions.model")
 
-
-
-
-
-
-
-
 async function searchPost(req, res) {
     try {
         const { query } = req.body;
@@ -25,7 +18,6 @@ async function searchPost(req, res) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
 }
-
 
 
 module.exports={

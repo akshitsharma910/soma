@@ -1,21 +1,68 @@
-const {Schema,model,mongoose}=require("mongoose");
+const { readJSON, writeJSON } = require('../utils/fileUtils');
+const { v4: uuidv4 } = require('uuid');
 
-const User=require("./user.model")
-const Comment=require("./comment.model")
+const postsFile = 'posts.json';
 
+class Post {
+    constructor(title, content, genre, author, authorId) {
+        this.id = uuidv4();
+        this.authorId = authorId;
+        this.title = title;
+        this.content = content;
+        this.genre = genre;
+        this.author = author;
+        this.comments = [];
+        this.upvotes = 0;
+        this.downvotes = 0;
+    }
 
-const postSchema=new mongoose.Schema({
-    title:{type:String,required:true},
-    content:{type:String,default:""},
-    genre:{type:String,required:true},
-    author:{type:mongoose.Schema.Types.ObjectId,ref:User},
-    upvotes:{type:Number,default:0},
-    downvotes:{type:Number,default:0},
-    comments:[{type:mongoose.Schema.Types.ObjectId,ref:Comment}]
+    static findAll() {
+        return readJSON(postsFile);
+    }
 
-},{timestamps:true})
+    static findByAuthorId(id) {
+        const posts = readJSON(postsFile);
+        return posts.filter(post => post.authorId === id);
+    }
 
+    static findById(id) {
+        const posts = readJSON(postsFile);
+        return posts.find(post => post.id === id);
+    }
 
-const Post=model("post",postSchema);
+    static create({ title, content, genre, author, authorId }) {
+        const posts = readJSON(postsFile);
+        const newPost = new Post(title, content, genre, author, authorId);
+        posts.push(newPost);
+        writeJSON(postsFile, posts);
+        return newPost;
+    }
 
-module.exports=Post;
+    static deleteById(id) {
+        let posts = readJSON(postsFile);
+        posts = posts.filter(post => post.id !== id);
+        writeJSON(postsFile, posts);
+    }
+
+    static addComment(postId, comment) {
+        const posts = readJSON(postsFile);
+        const post = posts.find(post => post.id === postId);
+        if (post) {
+            post.comments.push(comment);
+            writeJSON(postsFile, posts);
+        }
+    }
+
+    static async update(query, update) {
+        const posts = await readJSON(postsFile);
+        const post = posts.find(post => post.id === query.id);
+        if (post) {
+            if (update.$pull && update.$pull.comments) {
+                post.comments = post.comments.filter(comment => comment.id !== update.$pull.comments.id);
+            }
+            await writeJSON(postsFile, posts);
+        }
+    }
+}
+
+module.exports = Post;

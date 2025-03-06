@@ -1,0 +1,34 @@
+[
+  {
+    "id": "36303990-4d7c-422a-95b0-d8bd1f8608ba",
+    "authorId": "7d165c4a-decc-46c5-8714-3bc64611caaa",
+    "title": "trsda",
+    "content": "sfdasda",
+    "genre": "Fiction",
+    "author": "test",
+    "comments": [],
+    "upvotes": 0,
+    "downvotes": 0
+  },
+  {
+    "id": "b70e4718-c347-4505-bc33-482672e1d6d5",
+    "authorId": "671cfdaf-c961-445f-a217-1452afaeae58",
+    "title": "dasdas",
+    "content": "aasdasd",
+    "genre": "Fiction",
+    "author": "admin",
+    "comments": [
+      {
+        "id": "e1bda652-deb7-4917-9fb9-ac697c50981d",
+        "authorId": "671cfdaf-c961-445f-a217-1452afaeae58",
+        "post": "b70e4718-c347-4505-bc33-482672e1d6d5",
+        "author": "admin",
+        "content": "dasdas",
+        "upvotes": 0,
+        "downvotes": 0
+      }
+    ],
+    "upvotes": 0,
+    "downvotes": 0
+  }
+]
