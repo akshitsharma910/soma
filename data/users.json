@@ -10,5 +10,19 @@
     "fullName": "test",
     "email": "test@gmail.com",
     "password": "$2a$10$LJTo7EqKHNWUYQ0drmTu5uKTXk3KhmZf2B.uO3q4/Q.BoFvSme1bm"
+  },
+  {
+    "id": "b4933bf5-9934-4f04-9928-75ffe4f4a64f",
+    "fullName": "Annanya ",
+    "email": "Ann@gmail.com",
+    "password": "$2a$10$0H6X8HIhb1LO0/P660PqquDrl23tvfytTyoRdEI2at3qUeUyNq5LO",
+    "picture": null
+  },
+  {
+    "id": "1fd43dfe-d04d-49f4-b418-809e51f2bdb0",
+    "fullName": "Abhinav Singh",
+    "email": "Abhi@gmail.com",
+    "password": "$2a$10$kM.DnX8PDCXp4s5.s2e.fO.7M4kCtaItZ9v1tdocQyQaOpD63lpdm",
+    "picture": null
   }
 ]

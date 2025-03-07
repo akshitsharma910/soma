@@ -30,5 +30,16 @@
     ],
     "upvotes": 0,
     "downvotes": 0
+  },
+  {
+    "id": "cd6e0b23-741b-46ab-b8a3-a999948aa667",
+    "authorId": "1fd43dfe-d04d-49f4-b418-809e51f2bdb0",
+    "title": "New Post",
+    "content": "New content",
+    "genre": "Non-Fiction",
+    "author": "Abhinav Singh",
+    "comments": [],
+    "upvotes": 0,
+    "downvotes": 0
   }
 ]
