@@ -20,6 +20,10 @@ function handleUserLogout(req, res) {
 
 async function createUser(req, res) {
     const { fullName, email, password } = req.body;
+    const existingUser = await User.findByEmail(email);
+    if (existingUser) {
+        return res.status(400).json({ message: "Email already exists" });
+    }
     await User.create({ fullName, email, password });
     return res.redirect("/user/login");
 }
@@ -61,6 +65,7 @@ async function showUserPost(req, res) {
 }
 
 async function showProfile(req, res) {
+    const { fullName, email, password } = req.body;
     try {
         if (!req.user || !req.user.id) {
             console.error("User not authenticated");
@@ -90,6 +95,34 @@ async function editProfile(req, res) {
     }
 }
 
+async function updateProfile(req, res) {
+    const { inputUsername, inputEmailAddress, profilePicture } = req.body;
+    // console.log("workingd")
+    try {
+        if (!req.user || !req.user.id) {
+            console.error("User not authenticated");
+            return res.status(401).json({ message: "Unauthorized: User not logged in" });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.fullName = inputUsername || user.fullName;
+        user.email = inputEmailAddress || user.email;
+        user.picture = profilePicture || user.picture;
+
+        await User.update(user);
+
+        res.redirect("/user/profile");
+    } catch (error) {
+        console.error("Error updating user:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
 module.exports = {
     handleUserSignup,
     handleUserLogin,
@@ -100,4 +133,5 @@ module.exports = {
     showUserPost,
     showProfile,
     editProfile,
+    updateProfile,
 };

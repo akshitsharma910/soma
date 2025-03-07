@@ -157,6 +157,30 @@ async function deleteComment(req, res) {
     }
 }
 
+async function searchPost(req, res) {
+    try {
+        let searchInput = req.body.searchInput;
+        console.log(searchInput)
+        if (!searchInput) return res.status(400).json({ message: "searchInput is required" });
+
+        const results = await Post.find({
+            $or: [
+                { title: { $regex: searchInput, $options: "i" } },
+                { content: { $regex: searchInput, $options: "i" } }
+            ]
+        });
+
+        res.render("search", {
+            results,
+            searchInput,
+            user: req.user || null
+        })
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
+
+
 module.exports = {
     getPostPage,
     addPost,
@@ -165,5 +189,6 @@ module.exports = {
     handleHomePage,
     addComment,
     deleteComment,
+    searchPost,
     // getMyPost,
 };

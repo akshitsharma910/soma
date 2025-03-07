@@ -63,6 +63,17 @@ class Post {
             await writeJSON(postsFile, posts);
         }
     }
+
+    static async find(query) {
+        const posts = await readJSON(postsFile);
+        return posts.filter(post => {
+            return query.$or.some(condition => {
+                const [key, value] = Object.entries(condition)[0];
+                const regex = new RegExp(value.$regex, value.$options);
+                return regex.test(post[key]);
+            });
+        });
+    }
 }
 
 module.exports = Post;

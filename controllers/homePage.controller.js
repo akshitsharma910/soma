@@ -2,14 +2,14 @@ const Post=require("../models/postFunctions.model")
 
 async function searchPost(req, res) {
     try {
-        const { query } = req.body;
-        console.log(query)
-        if (!query) return res.status(400).json({ message: "Query is required" });
+        let searchInput = req.body.searchInput;
+        console.log(searchInput)
+        if (!searchInput) return res.status(400).json({ message: "searchInput is required" });
 
         const results = await Post.find({
             $or: [
-                { title: { $regex: query, $options: "i" } },
-                { content: { $regex: query, $options: "i" } }
+                { title: { $regex: searchInput, $options: "i" } },
+                { content: { $regex: searchInput, $options: "i" } }
             ]
         });
 

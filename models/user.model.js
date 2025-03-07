@@ -1,6 +1,8 @@
 const { readJSON, writeJSON } = require('../utils/fileUtils');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 
 const usersFile = 'users.json';
 
@@ -36,12 +38,29 @@ class User {
         return newUser;
     }
 
-    static async update(query, update) {
+    static async update(query) {
         const users = await readJSON(usersFile);
         const user = users.find(user => user.id === query.id);
         if (user) {
-            if (update.$set && update.$set.picture) {
-                user.picture = update.$set.picture;
+            if (query.picture) {
+                const userDir = path.join(__dirname, '..', 'public', 'userData', user.id);
+                if (!fs.existsSync(userDir)) {
+                    fs.mkdirSync(userDir, { recursive: true });
+                }
+
+                const picturePath = path.join(userDir, path.basename(query.picture));
+                fs.copyFileSync(query.picture, picturePath);
+
+                user.picture = picturePath;
+            }
+            if (query.fullName) {
+            user.fullName = query.fullName;
+            }
+            if (query.email) {
+            user.email = query.email;
+            }
+            if (query.password) {
+            user.password = query.password;
             }
             writeJSON(usersFile, users);
         }

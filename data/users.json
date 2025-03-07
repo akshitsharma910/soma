@@ -1,9 +1,10 @@
 [
   {
     "id": "671cfdaf-c961-445f-a217-1452afaeae58",
-    "fullName": "admin",
+    "fullName": "adminss",
     "email": "admin@gmail.com",
-    "password": "$2a$10$uhieG4/dN67I.l9lBUsPt.3xsUiicL0KvJWdBRgzkQuB7Kgix1E1q"
+    "password": "$2a$10$uhieG4/dN67I.l9lBUsPt.3xsUiicL0KvJWdBRgzkQuB7Kgix1E1q",
+    "picture": null
   },
   {
     "id": "7d165c4a-decc-46c5-8714-3bc64611caaa",
